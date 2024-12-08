@@ -16,6 +16,7 @@ class Preprocessing:
 
     def read_file(self):
         self.df = pd.read_csv(self.dataFilePath)
+        return self.df
 
     def printFileData(self):
         print(self.df.head())
@@ -109,7 +110,7 @@ class Preprocessing:
 
 
 
-    def identify_and_remove_strongly_correlated_pairs(self, threshold=0.7):
+    def identify_and_remove_strongly_correlated_pairs(self, df,threshold=0.7):
         """
         Identifie et supprime les colonnes fortement corrélées dans un DataFrame.
 
@@ -120,7 +121,7 @@ class Preprocessing:
         Returns:
             DataFrame: Le DataFrame après suppression des colonnes fortement corrélées.
         """
-        df_numeric = self.df.drop(columns=['class'])
+        df_numeric = df.drop(columns=['class'])
         
         correlation_matrix = df_numeric.corr()
 
