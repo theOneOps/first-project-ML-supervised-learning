@@ -117,12 +117,14 @@ class Classification:
             }
 
         return best_results
-    def print_results(self, results):
-        print("Comparaison des résultats des modèles :")
-        for model_name, result in results.items():
+    def print_results(self):
+        """
+        Print the comparison of results for all models.
+        """
+        print("\nComparaison des résultats des modèles :")
+        for model_name, result in self.best_results.items():
             print(f"\n{model_name} :")
             print(f"  Best Score: {result['best_score']}")
-            # Extract relevant values and print as a table
             print(f"\n{model_name} Classification Report:")
 
             # Print the header for the table
@@ -139,8 +141,5 @@ class Classification:
 
             # Print averages
             print("-" * 50)
-            print(
-                f"{'Macro avg':<10}{result['classification_report']['macro avg']['precision']:<12.4f}{result['classification_report']['macro avg']['recall']:<12.4f}{result['classification_report']['macro avg']['f1-score']:<12.4f}")
-            print(
-                f"{'Weighted avg':<10}{result['classification_report']['weighted avg']['precision']:<12.4f}{result['classification_report']['weighted avg']['recall']:<12.4f}{result['classification_report']['weighted avg']['f1-score']:<12.4f}")
-
+            print(f"{'Macro avg':<10}{result['classification_report']['macro avg']['precision']:<12.4f}{result['classification_report']['macro avg']['recall']:<12.4f}{result['classification_report']['macro avg']['f1-score']:<12.4f}")
+            print(f"{'Weighted avg':<10}{result['classification_report']['weighted avg']['precision']:<12.4f}{result['classification_report']['weighted avg']['recall']:<12.4f}{result['classification_report']['weighted avg']['f1-score']:<12.4f}")
