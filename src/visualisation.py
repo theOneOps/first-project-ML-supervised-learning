@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import math
+
 
 
 class Visualize:
@@ -128,3 +130,35 @@ class Visualize:
             self.plt.legend()
             plt.title(f"KDE Plot pour le feature {feature}")
             plt.show()  # Affiche chaque plot séparément
+   
+    def plot_boxplots(self, df, columns=None):
+        """
+        Affiche des boxplots pour les colonnes spécifiées avec une disposition particulière :
+        - Première ligne : 4 figures
+        - Lignes suivantes : 4 figures chacune
+
+        :param columns: Liste des colonnes à tracer. Si None, toutes les colonnes numériques seront tracées.
+        """
+        if columns is None:
+            columns = df.select_dtypes(include='number').columns
+
+        # Déterminer le nombre total de colonnes et de lignes nécessaires
+        first_row_count = 4
+        other_row_count = 4
+        remaining = len(columns) - first_row_count
+        n_rows = 1 + math.ceil(max(0, remaining) / other_row_count)  # 1 pour la première ligne
+
+        fig, axes = plt.subplots(n_rows, 4, figsize=(20, 4 * n_rows))
+        axes = axes.flatten()  # Transforme les axes en une liste pour faciliter l'indexation
+
+        for i, col in enumerate(columns):
+            sns.boxplot(data=df, y=col, ax=axes[i],color='white',width=0.2,flierprops=dict(markerfacecolor='red', marker='D'))
+            axes[i].set_title(f"Boxplot de {col}")
+            axes[i].set_ylabel(col)
+
+        # Supprimer les axes inutilisés
+        for j in range(len(columns), len(axes)):
+            fig.delaxes(axes[j])
+
+        plt.tight_layout()
+        plt.show()
