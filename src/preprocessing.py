@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
 
 
 class Preprocessing:
@@ -22,6 +23,40 @@ class Preprocessing:
         # A brief description of the data
         print(self.df.describe())
 
+    def plot_target_distribution(self):
+        """
+        Visualise la répartition de la variable cible 'satisfied' sous forme de diagramme circulaire.
+    
+        La méthode affiche un graphique avec les proportions de chaque catégorie de la variable cible.
+        """
+        # Compte les occurrences de chaque catégorie dans la variable 'satisfied'
+        counts = self.df['class'].value_counts()
+    
+        # Calcule les pourcentages pour chaque catégorie
+        percentages = (counts / counts.sum()) * 100
+    
+        # Définit les étiquettes et couleurs pour le graphique
+        colors = ('rosybrown', 'lightgray','slategrey')  # Couleurs pour les sections du diagramme
+    
+        # Configure la taille de la figure
+        plt.figure(figsize=(3, 2.5))
+    
+        # Trace un diagramme circulaire
+        plt.pie(
+            percentages,
+            labels=counts.index,
+            colors=colors,
+            shadow=True,
+            autopct='%1.1f%%',
+            )
+    
+        # Ajoute un titre au graphique
+        plt.title('Répartition de la variable Class')
+    
+        # Affiche le graphique
+        plt.show()
+
+    
     def encodingFeatures(self, features):
         for col in features:
             le = LabelEncoder()
