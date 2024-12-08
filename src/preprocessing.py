@@ -22,6 +22,38 @@ class Preprocessing:
         print(self.df.info())
         # A brief description of the data
         print(self.df.describe())
+    
+    def extract_categorical_columns(self):
+        """
+        Identifie les colonnes catégorielles dans le DataFrame, affiche leurs valeurs uniques avec leurs fréquences 
+        et crée un DataFrame contenant uniquement ces colonnes.
+        Returns:
+        DataFrame: Un DataFrame contenant uniquement les colonnes catégorielles.
+        """
+        def is_categorical(array):
+            """
+            Vérifie si une colonne est catégorielle en se basant sur son type de données.
+            Args:
+            array (Series): Une colonne du DataFrame.
+            Returns:
+            bool: True si la colonne est de type 'object', sinon False.
+            """
+            return array.dtype.name == 'object'
+        
+        categorical_columns = []
+        
+        # Parcourt toutes les colonnes du DataFrame                                        
+        for col in self.df.columns:
+            # Vérifie si la colonne est catégorielle
+            if is_categorical(self.df[col]):
+                categorical_columns.append(col)
+                # Affiche le nom de la colonne et la répartition des valeurs uniques
+                print(col)
+                print(self.df[col].value_counts())
+                print("\n")
+        df_categorical = self.df[categorical_columns].copy()
+
+        return df_categorical
 
     def plot_target_distribution(self):
         """
