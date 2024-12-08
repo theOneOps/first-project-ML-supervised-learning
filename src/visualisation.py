@@ -49,12 +49,12 @@ class Visualize:
         self.preprocessing.df.hist(figsize=(12, 10))
         self.plt.show()
 
-    def plot_outliers_percentage(self):
+    def plot_outliers_percentage(self,df):
         """
         Calcule le pourcentage d'outliers pour chaque variable numérique dans le DataFrame et les affiche sous forme de graphique à barres.
         """
         # Sélectionne un sous-ensemble de colonnes numériques du DataFrame
-        df_num = self.df.drop(columns=['class'])
+        df_num = df.drop(columns=['class'])
         variables = df_num.columns  # Liste des variables à analyser
         
         # Initialise les listes pour stocker les pourcentages d'outliers et les indices des outliers
@@ -96,7 +96,7 @@ class Visualize:
         
         plt.show()
     
-    def plot_correlation_matrix(self, excluded_columns=[]):
+    def plot_correlation_matrix(self, df, excluded_columns=[]):
         """
         Trace une matrice de corrélation de Pearson pour un DataFrame donné,
         en excluant les colonnes spécifiées.
@@ -109,7 +109,7 @@ class Visualize:
             None
         """
         # Exclut les colonnes spécifiées pour créer un sous-ensemble de données numériques
-        df_numeric = self.df.drop(columns=excluded_columns)
+        df_numeric = df.drop(columns=excluded_columns)
         correlation_matrix = df_numeric.corr(method='pearson')
 
         # Crée un masque pour afficher uniquement une partie supérieure de la matrice
