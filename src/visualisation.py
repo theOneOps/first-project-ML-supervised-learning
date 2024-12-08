@@ -56,7 +56,7 @@ class Visualize:
         :param bins: Nombre de bins pour les histogrammes.
         """
         if columns is None:
-            columns = self.df.select_dtypes(include='number').columns
+            columns = self.preprocessing.df.select_dtypes(include='number').columns
 
         # Déterminer le nombre total de colonnes et de lignes nécessaires
         first_row_count = 4
@@ -68,7 +68,7 @@ class Visualize:
         axes = axes.flatten()  # Transforme les axes en une liste pour faciliter l'indexation
 
         for i, col in enumerate(columns):
-            sns.histplot(self.df[col], bins=bins, kde=True, ax=axes[i],color="rosybrown")
+            sns.histplot(self.preprocessing.df[col], bins=bins, kde=True, ax=axes[i],color="rosybrown")
             axes[i].set_title(f"Histogramme de {col}")
             axes[i].set_xlabel(col)
             axes[i].set_ylabel("Fréquence")
