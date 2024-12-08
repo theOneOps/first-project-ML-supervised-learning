@@ -7,6 +7,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import BaggingClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.svm import SVC
+from sklearn.metrics import roc_auc_score
+
+
 
 import numpy as np
 
@@ -89,6 +93,16 @@ class Classification:
             }
         ]
 
+        ## Les modèles après optimisation des hyperparamètres (avec GridSearchCV)
+        self.models = {
+            "Logistic Regression": LogisticRegression(C=10, solver='lbfgs', max_iter=1000),
+            "Decision Tree": DecisionTreeClassifier(criterion='entropy', max_depth=10, min_samples_split=5),
+            "Random Forest": RandomForestClassifier(max_depth=30, min_samples_split=5, n_estimators=100),
+            "SVC": SVC(C=10, gamma='scale', kernel='poly', probability=True),
+            "AdaBoost": AdaBoostClassifier(learning_rate=0.01, n_estimators=50),
+            "KNN": KNeighborsClassifier(n_neighbors=5, p=1, weights='distance')
+        }
+
     def train_and_evaluate(self, n_iter=10):
         """
         Entraîne les modèles et retourne les meilleurs résultats.
@@ -143,3 +157,14 @@ class Classification:
             print("-" * 50)
             print(f"{'Macro avg':<10}{result['classification_report']['macro avg']['precision']:<12.4f}{result['classification_report']['macro avg']['recall']:<12.4f}{result['classification_report']['macro avg']['f1-score']:<12.4f}")
             print(f"{'Weighted avg':<10}{result['classification_report']['weighted avg']['precision']:<12.4f}{result['classification_report']['weighted avg']['recall']:<12.4f}{result['classification_report']['weighted avg']['f1-score']:<12.4f}")
+    def verify_roc(self):
+        results = {}
+        for name, clf in self.models.items():
+            clf.fit(self.X_train, self.y_train)
+            y_score = clf.predict_proba(self.X_test)
+            
+            # Compute the ROC AUC score
+            roc_auc = roc_auc_score(self.y_test, y_score, multi_class='ovo')
+            results[name] = roc_auc
+            print(f"{name} - ROC AUC Score: {roc_auc}")
+        return results
