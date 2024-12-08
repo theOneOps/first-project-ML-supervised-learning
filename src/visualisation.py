@@ -95,6 +95,31 @@ class Visualize:
         plt.xticks(rotation=90)
         
         plt.show()
+    
+    def plot_correlation_matrix(self, excluded_columns=[]):
+        """
+        Trace une matrice de corrélation de Pearson pour un DataFrame donné,
+        en excluant les colonnes spécifiées.
+
+        Args:
+            df (DataFrame): Le DataFrame contenant les données à analyser.
+            excluded_columns (list, optional): Liste des colonnes à exclure de l'analyse de corrélation. Par défaut, aucune.
+
+        Returns:
+            None
+        """
+        # Exclut les colonnes spécifiées pour créer un sous-ensemble de données numériques
+        df_numeric = self.df.drop(columns=excluded_columns)
+        correlation_matrix = df_numeric.corr(method='pearson')
+
+        # Crée un masque pour afficher uniquement une partie supérieure de la matrice
+        mask = np.triu(np.ones_like(correlation_matrix, dtype=bool))
+
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(correlation_matrix, annot=True, cmap='YlGnBu', fmt=".3f", mask=mask)
+
+        plt.title('Matrice de Corrélation de Pearson')
+        plt.show()
     def checkDependenciesRelationDist(self, features):
         for feature in features:
             self.sns.kdeplot(
