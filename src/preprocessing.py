@@ -178,6 +178,47 @@ class Preprocessing:
         plt.title('Matrice de Corrélation de Pearson')
         plt.show()
 
+    def identify_and_remove_strongly_correlated_pairs(self, threshold=0.7):
+        """
+        Identifie et supprime les colonnes fortement corrélées dans un DataFrame.
+
+        Args:
+            df (DataFrame): Le DataFrame contenant les données à analyser.
+            threshold (float): Seuil de corrélation pour déterminer les paires fortement corrélées.
+
+        Returns:
+            DataFrame: Le DataFrame après suppression des colonnes fortement corrélées.
+        """
+        df_numeric = self.df.drop(columns=['class'])
+        
+        correlation_matrix = df_numeric.corr()
+
+        strongly_correlated_pairs = []
+
+        for i in range(len(correlation_matrix.columns)):
+            for j in range(i + 1, len(correlation_matrix.columns)):
+                correlation_value = correlation_matrix.iloc[i, j]
+                if abs(correlation_value) > threshold:
+                    strongly_correlated_pairs.append(
+                        (correlation_matrix.columns[i], correlation_matrix.columns[j], correlation_value)
+                    )
+
+        # Affiche les paires fortement corrélées
+        if strongly_correlated_pairs:
+            print("Les paires de variables fortement corrélées sont :")
+            for pair in strongly_correlated_pairs:
+                print(f"{pair[0]} et {pair[1]} avec une corrélation de {pair[2]:.2f}")
+        else:
+            print("Aucune paire de variables fortement corrélée n'a été trouvée.")
+
+        # Extraction des colonnes à supprimer
+        correlated_columns = {pair[0] for pair in strongly_correlated_pairs}
+
+        # Suppression des colonnes fortement corrélées du DataFrame
+        df_cleaned = self.df.drop(columns=correlated_columns.intersection(self.df.columns), axis=1)
+
+        return df_cleaned
+
     def normalize_data(self, df, columns):
         """
         Applique une normalisation aux colonnes spécifiées en utilisant MinMaxScaler.
