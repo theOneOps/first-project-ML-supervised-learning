@@ -1,14 +1,15 @@
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import classification_report
-from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import BaggingClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import Pipeline
+
 import numpy as np
+
 
 
 class Classification:
@@ -61,15 +62,12 @@ class Classification:
                 }
             },
             {
-                'model': Pipeline([
-                    ('poly', PolynomialFeatures()),
-                    ('logistic', LogisticRegression())
-                ]),
+                'model': BaggingClassifier(),
                 'params': {
-                    'poly__degree': [2, 3, 4],
-                    'poly__interaction_only': [False, True],
-                    'poly__include_bias': [True, False],
-                    'logistic__C': np.logspace(-3, 2, 6)
+                    'n_estimators': [10, 20, 50],
+                    'max_samples': [0.5, 0.7, 1.0],
+                    'bootstrap': [True, False],
+                    'bootstrap_features': [True, False]
                 }
             },
             {
