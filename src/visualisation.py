@@ -98,7 +98,7 @@ class Visualize:
         
         plt.show()
     
-    def plot_correlation_matrix(self, df, excluded_columns=[]):
+    def plot_correlation_matrix(self,excluded_columns=[]):
         """
         Trace une matrice de corrélation de Pearson pour un DataFrame donné,
         en excluant les colonnes spécifiées.
@@ -111,7 +111,7 @@ class Visualize:
             None
         """
         # Exclut les colonnes spécifiées pour créer un sous-ensemble de données numériques
-        df_numeric = df.drop(columns=excluded_columns)
+        df_numeric = self.preprocessing.df.drop(columns=excluded_columns)
         correlation_matrix = df_numeric.corr(method='pearson')
 
         # Crée un masque pour afficher uniquement une partie supérieure de la matrice
