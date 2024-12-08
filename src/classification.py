@@ -117,3 +117,30 @@ class Classification:
             }
 
         return best_results
+    def print_results(self, results):
+        print("Comparaison des résultats des modèles :")
+        for model_name, result in results.items():
+            print(f"\n{model_name} :")
+            print(f"  Best Score: {result['best_score']}")
+            # Extract relevant values and print as a table
+            print(f"\n{model_name} Classification Report:")
+
+            # Print the header for the table
+            print(f"{'Class':<10}{'Precision':<12}{'Recall':<12}{'F1-Score':<12}")
+            print("-" * 50)
+
+            # Print the rows for each class
+            for label, metrics in result['classification_report'].items():
+                if label != 'accuracy' and label != 'macro avg' and label != 'weighted avg':
+                    precision = metrics['precision']
+                    recall = metrics['recall']
+                    f1_score = metrics['f1-score']
+                    print(f"{label:<10}{precision:<12.4f}{recall:<12.4f}{f1_score:<12.4f}")
+
+            # Print averages
+            print("-" * 50)
+            print(
+                f"{'Macro avg':<10}{result['classification_report']['macro avg']['precision']:<12.4f}{result['classification_report']['macro avg']['recall']:<12.4f}{result['classification_report']['macro avg']['f1-score']:<12.4f}")
+            print(
+                f"{'Weighted avg':<10}{result['classification_report']['weighted avg']['precision']:<12.4f}{result['classification_report']['weighted avg']['recall']:<12.4f}{result['classification_report']['weighted avg']['f1-score']:<12.4f}")
+
