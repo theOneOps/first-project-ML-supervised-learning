@@ -35,13 +35,10 @@ class Preprocessing:
         # Calcule les pourcentages pour chaque catégorie
         percentages = (counts / counts.sum()) * 100
     
-        # Définit les étiquettes et couleurs pour le graphique
-        colors = ('rosybrown', 'lightgray','slategrey')  # Couleurs pour les sections du diagramme
+        colors = ('rosybrown', 'lightgray','slategrey')  
     
-        # Configure la taille de la figure
         plt.figure(figsize=(3, 2.5))
     
-        # Trace un diagramme circulaire
         plt.pie(
             percentages,
             labels=counts.index,
@@ -50,13 +47,57 @@ class Preprocessing:
             autopct='%1.1f%%',
             )
     
-        # Ajoute un titre au graphique
         plt.title('Répartition de la variable Class')
     
-        # Affiche le graphique
         plt.show()
 
-    
+    def plot_outliers_percentage(self):
+        """
+        Calcule le pourcentage d'outliers pour chaque variable numérique dans le DataFrame et les affiche sous forme de graphique à barres.
+        """
+        # Sélectionne un sous-ensemble de colonnes numériques du DataFrame
+        df_num = self.df.drop(columns=['class'])
+        variables = df_num.columns  # Liste des variables à analyser
+        
+        # Initialise les listes pour stocker les pourcentages d'outliers et les indices des outliers
+        percentage_outliers = []
+        outliers_indices = []
+
+        # Parcourt chaque variable pour calculer les outliers
+        for variable in variables:
+            # Calcule le premier et le troisième quartile
+            q1 = df_num[variable].quantile(0.25)
+            q3 = df_num[variable].quantile(0.75)
+            
+            # Calcule l'écart interquartile (IQR)
+            iqr = q3 - q1
+            
+            # Détermine les bornes inférieure et supérieure pour détecter les outliers
+            lower_bound = q1 - 1.5 * iqr
+            upper_bound = q3 + 1.5 * iqr
+
+            # Identifie les valeurs considérées comme des outliers
+            outliers = df_num[(df_num[variable] < lower_bound) | (df_num[variable] > upper_bound)]
+
+            # Calcule le pourcentage d'outliers pour la variable
+            percentage = (len(outliers) / len(df_num)) * 100
+            percentage_outliers.append(percentage)
+            
+            # Ajoute les indices des outliers à la liste
+            outliers_indices.extend(outliers.index)
+
+        # Crée un graphique à barres pour afficher le pourcentage d'outliers par variable
+        plt.figure(figsize=(9, 4))
+        bars = plt.bar(variables, percentage_outliers, color='slategrey')
+
+        plt.xlabel('Variable')
+        plt.ylabel('Pourcentage d\'Outliers')
+        plt.title('Pourcentage d\'Outliers par Variable')
+
+        plt.xticks(rotation=90)
+        
+        # Affiche le graphique
+        plt.show()
     def encodingFeatures(self, features):
         for col in features:
             le = LabelEncoder()
