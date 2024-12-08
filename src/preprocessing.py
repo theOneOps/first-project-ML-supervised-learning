@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder,MinMaxScaler
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -177,6 +177,24 @@ class Preprocessing:
         plt.title('Matrice de Corrélation de Pearson')
         plt.show()
 
+    def normalize_data(self, df, columns):
+        """
+        Applique une normalisation aux colonnes spécifiées en utilisant MinMaxScaler.
+
+        Args:
+            df (DataFrame): Le DataFrame contenant les données à normaliser.
+            columns (list): Liste des colonnes à normaliser.
+
+        Returns:
+            DataFrame: Un nouveau DataFrame avec les colonnes normalisées.
+        """
+        scaler = MinMaxScaler()
+        
+        normalized_data = scaler.fit_transform(df)
+        
+        df_normalized = pd.DataFrame(normalized_data, columns=columns)
+        
+        return df_normalized
 
     # getters
     def getDataFrame(self):
