@@ -3,6 +3,7 @@ from sklearn.preprocessing import LabelEncoder,MinMaxScaler
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from sklearn.model_selection import train_test_split
 
 
 class Preprocessing:
@@ -195,6 +196,33 @@ class Preprocessing:
         df_normalized = pd.DataFrame(normalized_data, columns=columns)
         
         return df_normalized
+    
+
+    def split_data(self, df, target):
+        """
+        Divise les données en ensembles d'entraînement et de test.
+
+        Args:
+            df (DataFrame): Le DataFrame contenant toutes les caractéristiques.
+            target (str): Le nom de la colonne cible.
+
+        Returns:
+            tuple: Les ensembles d'entraînement et de test pour les caractéristiques (X_train, X_test) 
+                et pour la cible (y_train, y_test).
+        """
+        features = df.drop(columns=[target])
+        targets = df[target]
+        
+        # Division des données en ensembles d'entraînement et de test
+        X_train, X_test, y_train, y_test = train_test_split(
+            features, 
+            targets, 
+            test_size=0.20, 
+            random_state=42, 
+            stratify=targets
+        )
+        
+        return X_train, X_test, y_train, y_test
 
     # getters
     def getDataFrame(self):
