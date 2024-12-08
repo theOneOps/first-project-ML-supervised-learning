@@ -46,10 +46,38 @@ class Visualize:
         self.plt.title("Matrice de corrélation pour les features sélectionnées")
         self.plt.show()
 
-    def showHistogram(self):
-        print("Print the histogram of the dataframe \n")
-        self.preprocessing.df.hist(figsize=(12, 10))
-        self.plt.show()
+    def plot_histograms(self, columns=None, bins=30):
+        """
+        Affiche des histogrammes pour les colonnes spécifiées avec une disposition particulière :
+        - Première ligne : 4 figures
+        - Lignes suivantes : 4 figures chacune
+
+        :param columns: Liste des colonnes à tracer. Si None, toutes les colonnes numériques seront tracées.
+        :param bins: Nombre de bins pour les histogrammes.
+        """
+        if columns is None:
+            columns = self.df.select_dtypes(include='number').columns
+
+        # Déterminer le nombre total de colonnes et de lignes nécessaires
+        first_row_count = 4
+        other_row_count = 4
+        remaining = len(columns) - first_row_count
+        n_rows = 1 + math.ceil(max(0, remaining) / other_row_count)  # 1 pour la première ligne
+
+        fig, axes = plt.subplots(n_rows, 4, figsize=(20, 4 * n_rows))
+        axes = axes.flatten()  # Transforme les axes en une liste pour faciliter l'indexation
+
+        for i, col in enumerate(columns):
+            sns.histplot(self.df[col], bins=bins, kde=True, ax=axes[i],color="rosybrown")
+            axes[i].set_title(f"Histogramme de {col}")
+            axes[i].set_xlabel(col)
+            axes[i].set_ylabel("Fréquence")
+
+        for j in range(len(columns), len(axes)):
+            fig.delaxes(axes[j])
+
+        plt.tight_layout()
+        plt.show()
 
     def plot_outliers_percentage(self,df):
         """
