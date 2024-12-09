@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from imblearn.over_sampling import SMOTE
 
 
 class Preprocessing:
@@ -198,3 +199,28 @@ class Preprocessing:
     # getters
     def getDataFrame(self):
         return self.df
+
+    def resample_data(self, X, y, strategy='auto'):
+        """
+        Rééquilibre les classes dans les données en utilisant SMOTE.
+        
+        Args:
+            X (DataFrame): Caractéristiques des données.
+            y (Series): Cible.
+            strategy (str, dict, optional): Stratégie de rééchantillonnage, peut être 'auto' ou un dictionnaire spécifiant 
+                le nombre d'échantillons souhaité pour chaque classe. Par défaut 'auto'.
+                
+        Returns:
+            tuple: Les nouvelles caractéristiques et cibles après le rééchantillonnage (X_resampled, y_resampled).
+        """
+        # Initialisation de SMOTE pour le sur-échantillonnage
+        smote = SMOTE(sampling_strategy=strategy, random_state=42)
+        
+        # Application de SMOTE
+        X_resampled, y_resampled = smote.fit_resample(X, y)
+        
+        # Affichage des nouvelles proportions de classes
+        print("Distribution des classes après rééchantillonnage :")
+        print(pd.Series(y_resampled).value_counts())
+        
+        return X_resampled, y_resampled
