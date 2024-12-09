@@ -10,7 +10,7 @@ from sklearn.metrics import (
     accuracy_score,
     ConfusionMatrixDisplay,
     roc_auc_score,
-    classification_report,
+    precision_score, recall_score, f1_score, accuracy_score
 )
 from sklearn.model_selection import cross_val_score, learning_curve, RandomizedSearchCV
 from sklearn.neighbors import KNeighborsClassifier
@@ -255,6 +255,7 @@ class Training:
                     "solver": ["lbfgs", "sgd", "adam"],
                     "alpha": [0.0001, 0.001, 0.01],
                     "learning_rate": ["constant", "invscaling", "adaptive"],
+                    "max_iter" : [400],
                 },
             },
             {
@@ -276,7 +277,7 @@ class Training:
                     "poly__degree": [2, 3, 4],  # Degree of polynomials
                     "logistic__C": np.logspace(-3, 2, 6),  # Regularization
                     "logistic__solver": ["liblinear", "newton-cg", "lbfgs", "saga"],
-                    "logistic__penalty": ["l1", "l2", "none"],  # Regularization
+                    "logistic__penalty": ["l1", "l2", "None"],  # Regularization
                 },
             },
         ]
@@ -291,8 +292,8 @@ class Training:
 
         best_results = {}
         for model_info in self.models:
-            model = model_info["model"]
-            params = model_info["params"]
+            model = model_info['model']
+            params = model_info['params']
             # print(model)
 
             # RandomizedSearchCV for each model
@@ -307,18 +308,15 @@ class Training:
             )
             random_search.fit(self.X_Train, self.Y_Train)
 
-            # Best model and evaluation
-            best_model = random_search.best_estimator_
-            best_score = random_search.best_score_
-            y_pred = best_model.predict(self.X_Test)
+            print(f"Meilleurs paramètres pour {model.__class__.__name__}: {random_search.best_params_}")
 
-            #report = classification_report(self.Y_Test, y_pred, output_dict=True)
-            best_results[model.__class__.__name__] = {
-                "best_model": best_model,
-                "best_score": best_score,
-                #"predictions": y_pred,
-                #"classification_report": report,
-            }
-            print("----------------------------------------------------------------")
-
-        return best_results
+      
+    def evaluate_model(y_true, y_pred):
+        evaluation = {
+            'Accuracy': accuracy_score(y_true, y_pred),
+            'Precision': precision_score(y_true, y_pred, average="weighted",zero_division=0),
+            'Recall': recall_score(y_true, y_pred, average="weighted",zero_division=0),
+            'F1_Score': f1_score(y_true, y_pred, average="weighted",zero_division=0)
+        }
+        return evaluation
+    
