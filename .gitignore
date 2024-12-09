@@ -1,3 +1,5 @@
 .venv
 .log
 .idea
+.ipynb_checkpoints
+./data/new_data_star_classification.csv
