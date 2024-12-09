@@ -1,9 +1,7 @@
-import pandas as pd
-from sklearn.preprocessing import LabelEncoder,MinMaxScaler
 import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
+import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 
 class Preprocessing:
@@ -26,14 +24,15 @@ class Preprocessing:
         print(self.df.info())
         # A brief description of the data
         print(self.df.describe())
-    
+
     def extract_categorical_columns(self):
         """
-        Identifie les colonnes catégorielles dans le DataFrame, affiche leurs valeurs uniques avec leurs fréquences 
+        Identifie les colonnes catégorielles dans le DataFrame, affiche leurs valeurs uniques avec leurs fréquences
         et crée un DataFrame contenant uniquement ces colonnes.
         Returns:
         DataFrame: Un DataFrame contenant uniquement les colonnes catégorielles.
         """
+
         def is_categorical(array):
             """
             Vérifie si une colonne est catégorielle en se basant sur son type de données.
@@ -42,11 +41,11 @@ class Preprocessing:
             Returns:
             bool: True si la colonne est de type 'object', sinon False.
             """
-            return array.dtype.name == 'object'
-        
+            return array.dtype.name == "object"
+
         categorical_columns = []
-        
-        # Parcourt toutes les colonnes du DataFrame                                        
+
+        # Parcourt toutes les colonnes du DataFrame
         for col in self.df.columns:
             # Vérifie si la colonne est catégorielle
             if is_categorical(self.df[col]):
@@ -62,29 +61,29 @@ class Preprocessing:
     def plot_target_distribution(self):
         """
         Visualise la répartition de la variable cible 'satisfied' sous forme de diagramme circulaire.
-    
+
         La méthode affiche un graphique avec les proportions de chaque catégorie de la variable cible.
         """
         # Compte les occurrences de chaque catégorie dans la variable 'satisfied'
-        counts = self.df['class'].value_counts()
-    
+        counts = self.df["class"].value_counts()
+
         # Calcule les pourcentages pour chaque catégorie
         percentages = (counts / counts.sum()) * 100
-    
-        colors = ('rosybrown', 'lightgray','slategrey')  
-    
+
+        colors = ("rosybrown", "lightgray", "slategrey")
+
         plt.figure(figsize=(3, 2.5))
-    
+
         plt.pie(
             percentages,
             labels=counts.index,
             colors=colors,
             shadow=True,
-            autopct='%1.1f%%',
-            )
-    
-        plt.title('Répartition de la variable Class')
-    
+            autopct="%1.1f%%",
+        )
+
+        plt.title("Répartition de la variable Class")
+
         plt.show()
 
     def encodingFeatures(self, features):
@@ -108,9 +107,7 @@ class Preprocessing:
         if self.nullSum.any():
             self.df.dropna(inplace=True)
 
-
-
-    def identify_and_remove_strongly_correlated_pairs(self,threshold=0.7):
+    def identify_and_remove_strongly_correlated_pairs(self, threshold=0.7):
         """
         Identifie et supprime les colonnes fortement corrélées dans un DataFrame.
 
@@ -121,8 +118,8 @@ class Preprocessing:
         Returns:
             DataFrame: Le DataFrame après suppression des colonnes fortement corrélées.
         """
-        df_numeric = self.df.drop(columns=['class'])
-        
+        df_numeric = self.df.drop(columns=["class"])
+
         correlation_matrix = df_numeric.corr()
 
         strongly_correlated_pairs = []
@@ -132,7 +129,11 @@ class Preprocessing:
                 correlation_value = correlation_matrix.iloc[i, j]
                 if abs(correlation_value) > threshold:
                     strongly_correlated_pairs.append(
-                        (correlation_matrix.columns[i], correlation_matrix.columns[j], correlation_value)
+                        (
+                            correlation_matrix.columns[i],
+                            correlation_matrix.columns[j],
+                            correlation_value,
+                        )
                     )
 
         # Affiche les paires fortement corrélées
@@ -147,7 +148,9 @@ class Preprocessing:
         correlated_columns = {pair[0] for pair in strongly_correlated_pairs}
 
         # Suppression des colonnes fortement corrélées du DataFrame
-        df_cleaned = self.df.drop(columns=correlated_columns.intersection(self.df.columns), axis=1)
+        df_cleaned = self.df.drop(
+            columns=correlated_columns.intersection(self.df.columns), axis=1
+        )
 
         return df_cleaned
 
@@ -163,13 +166,12 @@ class Preprocessing:
             DataFrame: Un nouveau DataFrame avec les colonnes normalisées.
         """
         scaler = MinMaxScaler()
-        
+
         normalized_data = scaler.fit_transform(df)
-        
+
         df_normalized = pd.DataFrame(normalized_data, columns=columns)
-        
+
         return df_normalized
-    
 
     def split_data(self, df, target):
         """
@@ -180,21 +182,17 @@ class Preprocessing:
             target (str): Le nom de la colonne cible.
 
         Returns:
-            tuple: Les ensembles d'entraînement et de test pour les caractéristiques (X_train, X_test) 
+            tuple: Les ensembles d'entraînement et de test pour les caractéristiques (X_train, X_test)
                 et pour la cible (y_train, y_test).
         """
         features = df.drop(columns=[target])
         targets = df[target]
-        
+
         # Division des données en ensembles d'entraînement et de test
         X_train, X_test, y_train, y_test = train_test_split(
-            features, 
-            targets, 
-            test_size=0.20, 
-            random_state=42, 
-            stratify=targets
+            features, targets, test_size=0.20, random_state=42, stratify=targets
         )
-        
+
         return X_train, X_test, y_train, y_test
 
     # getters
