@@ -10,6 +10,9 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.svm import SVC
 from sklearn.metrics import roc_auc_score
 
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.model_selection import learning_curve
 
 
 import numpy as np
@@ -168,3 +171,26 @@ class Classification:
             results[name] = roc_auc
             print(f"{name} - ROC AUC Score: {roc_auc}")
         return results
+    
+    def plot_learning_curve(self, X,y, model, title="Learning Curve"):
+        train_sizes, train_scores, test_scores = learning_curve(
+            model, X, y, cv=5, train_sizes=np.linspace(0.1, 1.0, 10), scoring='accuracy', n_jobs=-1
+        )
+
+        train_mean = np.mean(train_scores, axis=1)
+        train_std = np.std(train_scores, axis=1)
+        test_mean = np.mean(test_scores, axis=1)
+        test_std = np.std(test_scores, axis=1)
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(train_sizes, train_mean, label='Train Score', color='blue')
+        plt.plot(train_sizes, test_mean, label='Validation Score', color='green')
+        plt.fill_between(train_sizes, train_mean - train_std, train_mean + train_std, color='blue', alpha=0.2)
+        plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, color='green', alpha=0.2)
+
+        plt.title(title)
+        plt.xlabel('Training Size')
+        plt.ylabel('Accuracy')
+        plt.legend()
+        plt.grid()
+        plt.show()
