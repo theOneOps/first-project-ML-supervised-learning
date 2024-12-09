@@ -312,12 +312,13 @@ class Training:
             best_score = random_search.best_score_
             y_pred = best_model.predict(self.X_Test)
 
-            report = classification_report(self.Y_Test, y_pred, output_dict=True)
+            #report = classification_report(self.Y_Test, y_pred, output_dict=True)
             best_results[model.__class__.__name__] = {
                 "best_model": best_model,
                 "best_score": best_score,
-                "predictions": y_pred,
-                "classification_report": report,
+                #"predictions": y_pred,
+                #"classification_report": report,
             }
+            print("----------------------------------------------------------------")
 
         return best_results
