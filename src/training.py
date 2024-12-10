@@ -82,16 +82,6 @@ class Training:
                     "p": [1, 2],
                 },
             },
-            {
-                "model": MLPClassifier(max_iter=200),
-                "params": {
-                    "hidden_layer_sizes": [(50,), (100,), (100, 50), (150, 100, 50)],
-                    "activation": ["relu", "tanh", "logistic"],
-                    "solver": ["adam", "sgd", "lbfgs"],
-                    "alpha": [0.0001, 0.001, 0.01],
-                    "learning_rate": ["constant", "adaptive"],
-                },
-            },
         ]
 
     def initialize_all_models(self):
@@ -106,7 +96,6 @@ class Training:
                     ("logistic", LogisticRegression()),
                 ]
             ),
-            "Neural Network": MLPClassifier(),
             "AdaBoost": AdaBoostClassifier(),
             "Bagging": BaggingClassifier(),
         }
