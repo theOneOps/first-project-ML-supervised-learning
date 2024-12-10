@@ -3,7 +3,6 @@ from matplotlib import pyplot as plt
 from sklearn.ensemble import (
     RandomForestClassifier,
     AdaBoostClassifier,
-    BaggingClassifier,
 )
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -16,7 +15,6 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import cross_val_score, learning_curve, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.svm import SVC
@@ -97,7 +95,6 @@ class Training:
                 ]
             ),
             "AdaBoost": AdaBoostClassifier(),
-            "Bagging": BaggingClassifier(),
         }
 
     def train_model(self, model_name):
