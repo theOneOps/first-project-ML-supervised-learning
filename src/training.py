@@ -7,12 +7,14 @@ from sklearn.ensemble import (
 )
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
-    accuracy_score,
     ConfusionMatrixDisplay,
     roc_auc_score,
-    precision_score, recall_score, f1_score, accuracy_score
+    precision_score,
+    recall_score,
+    f1_score,
+    accuracy_score,
 )
-from sklearn.model_selection import cross_val_score, learning_curve, RandomizedSearchCV
+from sklearn.model_selection import cross_val_score, learning_curve, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
@@ -255,7 +257,7 @@ class Training:
                     "solver": ["lbfgs", "sgd", "adam"],
                     "alpha": [0.0001, 0.001, 0.01],
                     "learning_rate": ["constant", "invscaling", "adaptive"],
-                    "max_iter" : [400],
+                    "max_iter": [400],
                 },
             },
             {
@@ -282,41 +284,48 @@ class Training:
             },
         ]
 
-    def train_and_evaluate_grid_search_cv(self, n_iter=10):
+    def train_and_evaluate_grid_search_cv(self):
         """
-        Trains the models and returns the best results.
-        :param n_iter: Number of iterations for RandomizedSearchCV.
+        Trains the models with hyperparameter's search with gridSearchCV and
+        returns the best results.
         """
         # Now we add parameters for all models
         self.addParametersForModels()
 
-        best_results = {}
         for model_info in self.models:
-            model = model_info['model']
-            params = model_info['params']
-            # print(model)
+            model = model_info["model"]
+            params = model_info["params"]
 
-            # RandomizedSearchCV for each model
-            random_search = RandomizedSearchCV(
-                model,
-                params,
-                cv=5,
-                scoring="accuracy",
-                n_iter=n_iter,
-                n_jobs=-1,
-                random_state=42,
+            # GridSearchCV for each model
+            grid_search = GridSearchCV(
+                model, param_grid=params, cv=5, n_jobs=-1, scoring="accuracy"
             )
-            random_search.fit(self.X_Train, self.Y_Train)
+            grid_search.fit(self.X_Train, self.Y_Train)
 
-            print(f"Meilleurs paramètres pour {model.__class__.__name__}: {random_search.best_params_}")
+            print(
+                f"Meilleurs paramètres pour {model.__class__.__name__}: {grid_search.best_params_}"
+            )
 
-      
-    def evaluate_model(y_true, y_pred):
+            y_pred = grid_search.predict(self.X_Test)
+
+            evaluation = self.evaluate_model(self.Y_Test, y_pred)
+            print(f"Évaluation du modèle {model.__class__.__name__}:")
+            self.print_evaluation(evaluation)
+            print("-" * 50)
+
+    def print_evaluation(self, evaluation):
+        print("Exactitude du modèle : {:.2f}%".format(evaluation["Accuracy"] * 100))
+        print("Précision du modèle : {:.2f}%".format(evaluation["Precision"] * 100))
+        print("Recall du modèle : {:.2f}%".format(evaluation["Recall"] * 100))
+        print("F1_score du modèle : {:.2f}%".format(evaluation["F1_Score"] * 100))
+
+    def evaluate_model(self, y_true, y_pred):
         evaluation = {
-            'Accuracy': accuracy_score(y_true, y_pred),
-            'Precision': precision_score(y_true, y_pred, average="weighted",zero_division=0),
-            'Recall': recall_score(y_true, y_pred, average="weighted",zero_division=0),
-            'F1_Score': f1_score(y_true, y_pred, average="weighted",zero_division=0)
+            "Accuracy": accuracy_score(y_true, y_pred),
+            "Precision": precision_score(
+                y_true, y_pred, average="weighted", zero_division=0
+            ),
+            "Recall": recall_score(y_true, y_pred, average="weighted", zero_division=0),
+            "F1_Score": f1_score(y_true, y_pred, average="weighted", zero_division=0),
         }
         return evaluation
-    
