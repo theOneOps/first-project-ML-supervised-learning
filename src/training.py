@@ -259,7 +259,7 @@ class Training:
         return results
 
     def addParametersForModels(self):
-        self.models = self.models = {
+        self.models = {
             "Logistic Regression": LogisticRegression(
                 C=10, solver="lbfgs", max_iter=1000
             ),
@@ -280,6 +280,8 @@ class Training:
         returns the best results.
         """
         # Now we add parameters for all models
+        self.addParametersForModels()
+
         for classifier in self.classifiers:
             model = classifier["model"]
             params = classifier["params"]
@@ -290,21 +292,21 @@ class Training:
             grid_search.fit(self.X_Train, self.Y_Train)
 
             print(
-                f"Meilleurs paramètres pour {model.__class__.__name__}: {grid_search.best_params_}"
+                f"Best parameters for {model.__class__.__name__}: {grid_search.best_params_}"
             )
 
             y_pred = grid_search.predict(self.X_Test)
 
             evaluation = self.evaluate_model(self.Y_Test, y_pred)
-            print(f"Évaluation du modèle {model.__class__.__name__}:")
+            print(f"Model evaluation {model.__class__.__name__}:")
             self.print_evaluation(evaluation)
             print("-" * 50)
 
     def print_evaluation(self, evaluation):
-        print("Exactitude du modèle : {:.2f}%".format(evaluation["Accuracy"] * 100))
-        print("Précision du modèle : {:.2f}%".format(evaluation["Precision"] * 100))
-        print("Recall du modèle : {:.2f}%".format(evaluation["Recall"] * 100))
-        print("F1_score du modèle : {:.2f}%".format(evaluation["F1_Score"] * 100))
+        print("Model accuracy : {:.2f}%".format(evaluation["Accuracy"] * 100))
+        print("Model precision : {:.2f}%".format(evaluation["Precision"] * 100))
+        print("Model recall : {:.2f}%".format(evaluation["Recall"] * 100))
+        print("Model F1_score : {:.2f}%".format(evaluation["F1_Score"] * 100))
 
     def evaluate_model(self, y_true, y_pred):
         evaluation = {
