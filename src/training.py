@@ -19,6 +19,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 
@@ -33,6 +34,65 @@ class Training:
         self.Y_Test = Y_Test
         self.errors = {}
         self.initialize_all_models()
+
+        self.classifiers = [
+            {
+                "model": LogisticRegression(max_iter=200),
+                "params": {
+                    "C": [0.01, 0.1, 1, 10],
+                    "solver": ["liblinear", "lbfgs", "newton-cg"],
+                },
+            },
+            {
+                "model": DecisionTreeClassifier(),
+                "params": {
+                    "criterion": ["gini", "entropy"],
+                    "max_depth": [5, 10, 15, None],
+                    "min_samples_split": [2, 5, 10],
+                },
+            },
+            {
+                "model": RandomForestClassifier(),
+                "params": {
+                    "n_estimators": [50, 100, 200],
+                    "max_depth": [10, 20, 30, None],
+                    "min_samples_split": [2, 5, 10],
+                },
+            },
+            {
+                "model": SVC(),
+                "params": {
+                    "C": [0.1, 1, 10],
+                    "kernel": ["linear", "rbf", "poly"],
+                    "gamma": ["scale", "auto"],
+                },
+            },
+            {
+                "model": AdaBoostClassifier(),
+                "params": {
+                    "n_estimators": [50, 100, 200],
+                    "learning_rate": [0.01, 0.1, 1],
+                },
+            },
+            {
+                "model": KNeighborsClassifier(),
+                "params": {
+                    "n_neighbors": [3, 5, 7],
+                    "weights": ["uniform", "distance"],
+                    "p": [1, 2],
+                },
+            },
+            {
+                "model": MLPClassifier(max_iter=200),
+                "params": {
+                    "hidden_layer_sizes": [(50,), (100,), (100, 50), (150, 100, 50)],
+                    "activation": ["relu", "tanh", "logistic"],
+                    "solver": ["adam", "sgd", "lbfgs"],
+                    "alpha": [0.0001, 0.001, 0.01],
+                    "learning_rate": ["constant", "adaptive"],
+                },
+            },
+        ]
 
     def initialize_all_models(self):
         self.models = {
@@ -213,76 +273,20 @@ class Training:
         return results
 
     def addParametersForModels(self):
-        self.models = [
-            {
-                "model": RandomForestClassifier(),
-                "params": {
-                    "n_estimators": [50, 100, 200],
-                    "min_samples_split": [2, 4, 6],
-                    "criterion": ["gini", "entropy"],
-                    "max_depth": [None, 10, 20, 30],
-                },
-            },
-            {
-                "model": DecisionTreeClassifier(),
-                "params": {
-                    "criterion": ["gini", "entropy"],
-                    "splitter": ["best", "random"],
-                    "max_depth": [None, 10, 20, 30],
-                    "min_samples_split": [2, 4, 6],
-                },
-            },
-            {
-                "model": KNeighborsClassifier(),
-                "params": {
-                    "n_neighbors": [3, 5, 7, 10],
-                    "weights": ["uniform", "distance"],
-                    "metric": ["euclidean", "manhattan", "minkowski"],
-                },
-            },
-            {
-                "model": BaggingClassifier(),
-                "params": {
-                    "n_estimators": [10, 20, 50],
-                    "max_samples": [0.5, 0.7, 1.0],
-                    "bootstrap": [True, False],
-                    "bootstrap_features": [True, False],
-                },
-            },
-            {
-                "model": MLPClassifier(),
-                "params": {
-                    "hidden_layer_sizes": [(50,), (100,), (100, 50)],
-                    "activation": ["identity", "logistic", "tanh", "relu"],
-                    "solver": ["lbfgs", "sgd", "adam"],
-                    "alpha": [0.0001, 0.001, 0.01],
-                    "learning_rate": ["constant", "invscaling", "adaptive"],
-                    "max_iter": [400],
-                },
-            },
-            {
-                "model": AdaBoostClassifier(),
-                "params": {
-                    "n_estimators": [50, 100, 200],
-                    "learning_rate": [0.01, 0.1, 1, 10],
-                },
-            },
-            {
-                "model": Pipeline(
-                    [
-                        ("poly", PolynomialFeatures()),  # Polynomial transformation
-                        ("logistic", LogisticRegression()),  # Logistic
-                        # Regression
-                    ]
-                ),
-                "params": {
-                    "poly__degree": [2, 3, 4],  # Degree of polynomials
-                    "logistic__C": np.logspace(-3, 2, 6),  # Regularization
-                    "logistic__solver": ["liblinear", "newton-cg", "lbfgs", "saga"],
-                    "logistic__penalty": ["l1", "l2", "None"],  # Regularization
-                },
-            },
-        ]
+        self.models = self.models = {
+            "Logistic Regression": LogisticRegression(
+                C=10, solver="lbfgs", max_iter=1000
+            ),
+            "Decision Tree": DecisionTreeClassifier(
+                criterion="entropy", max_depth=10, min_samples_split=5
+            ),
+            "Random Forest": RandomForestClassifier(
+                max_depth=30, min_samples_split=5, n_estimators=100
+            ),
+            "SVC": SVC(C=10, gamma="scale", kernel="poly", probability=True),
+            "AdaBoost": AdaBoostClassifier(learning_rate=0.01, n_estimators=50),
+            "KNN": KNeighborsClassifier(n_neighbors=5, p=1, weights="distance"),
+        }
 
     def train_and_evaluate_grid_search_cv(self):
         """
@@ -290,13 +294,10 @@ class Training:
         returns the best results.
         """
         # Now we add parameters for all models
-        self.addParametersForModels()
+        for classifier in self.classifiers:
+            model = classifier["model"]
+            params = classifier["params"]
 
-        for model_info in self.models:
-            model = model_info["model"]
-            params = model_info["params"]
-
-            # GridSearchCV for each model
             grid_search = GridSearchCV(
                 model, param_grid=params, cv=5, n_jobs=-1, scoring="accuracy"
             )
