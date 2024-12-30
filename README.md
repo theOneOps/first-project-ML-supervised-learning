@@ -12,9 +12,9 @@
 
 **visualization_of_data_images** : contains all the important visualization's images that are worth noticed.
 
-## In the visualising_proprocessing_ipnyb, we called all functions we have defined before in the src's files. You can also visualize the project's results on models' errors, the data's visualizartion and so on.
+In the visualising_proprocessing_ipnyb, we called all functions we have defined before in the src's files. You can also visualize the project's results on models' errors, the data's visualizartion and so on.
 
-## Authors and Acknowlegment
+## Authors (from sherbrooke's university)
 
 - Selly Medewou
 - Aya Errafik
